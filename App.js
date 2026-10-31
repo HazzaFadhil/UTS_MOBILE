@@ -1,31 +1,48 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button } from 'react-native';
-import { useState, useEffect} from 'react';
+import { useState } from 'react';
 
 
 export default function App() {
 
-  console.log('atiku')
-  const [angka, ubahAngka] = useState(0);
+  const [gempa, setGempa] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const tambahAngka = () => {
-    ubahAngka(angka + 1);
-  };
+  const getDataGempa = async () => {
+    try {
+      setLoading(true);
+      const http = await fetch(
+        "https://data.bmkg.go.id/DataMKG/TEWS/autogempa.json"
+      );
+      const response = await http.json();
 
-  const kurangAngka = () => {
-    if (angka > 0) {
-      ubahAngka(angka - 1);
+      // Struktur JSON BMKG menyimpan data di dalam response.Infogempa.gempa
+      setGempa(response.Infogempa.gempa);
+    } catch (error) {
+      console.error("Gagal mengambil data gempa:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  return (
+return (
     <View style={styles.container}>
-      <Text style={styles.text}>{angka}</Text>
+      <Text style={styles.title}>Info Gempa Terkini (BMKG)</Text>
 
-      <View style={styles.buttonContainer}>
-        <Button title="Kurang Angka" onPress={kurangAngka} color="#ff5252" />
-        <Button title="Tambah Angka" onPress={tambahAngka} color="#4CAF50" />
-      </View>
+      {/* Tombol untuk memuat data gempa saat diklik */}
+      <Button title={loading ? "Memuat..." : "Tampilkan Data Gempa"} onPress={getDataGempa} />
+
+      {/* Menampilkan data gempa jika sudah berhasil diambil */}
+      {gempa && (
+        <View style={styles.card}>
+          <Text style={styles.text}>📅 Tanggal: {gempa.Tanggal}</Text>
+          <Text style={styles.text}>⏰ Jam: {gempa.Jam}</Text>
+          <Text style={styles.text}>🌍 Wilayah: {gempa.Wilayah}</Text>
+          <Text style={styles.text}>⚡ Magnitudo: {gempa.Magnitude}</Text>
+          <Text style={styles.text}>🌊 Kedalaman: {gempa.Kedalaman}</Text>
+          <Text style={styles.text}>⚠️ Potensi: {gempa.Potensi}</Text>
+        </View>
+      )}
 
       <StatusBar style="auto" />
     </View>
