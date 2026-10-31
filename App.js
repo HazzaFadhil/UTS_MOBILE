@@ -56,9 +56,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,
+    padding: 56, 
   },
 
   buttonContainer: {
     gap: 10,
-  }
+  },
+
+card: {
+    marginTop: 15,
+    padding: 15,
+    backgroundColor: '#f8f9fa',
+}
 });
